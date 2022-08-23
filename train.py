@@ -29,9 +29,9 @@ if cuda:
 
 def train_loop():
     ### tqdm可以显示进度条
-    for i in tqdm(range(epoch + 1)):
-        ### 此处填写训练代码：
+    for i in tqdm(range(epoch)):
         net.train()
+        ### 此处填写训练代码：
 
         loss = loss_func()
         ### 固定三部曲：
@@ -39,11 +39,11 @@ def train_loop():
         loss.backward()  # 以训练集的误差进行反向传播, 计算参数更新值
         optimizer.step()  # 将参数更新值施加到 net 的 parameters 上
         # 每迭代50次打印一下结果
-        if i % 50 == 0:
-            print('epoch: {}, loss: {:.4}'.format(epoch, loss_func.data.item()))
+        if (i+1) % 50 == 0:
+            print('epoch: {}, loss: {:.4}'.format(i+1, loss.data.item()))
         # 每迭代200次保存模型
-        if i % 200 == 0:
-            torch.save(net, "./train_model/FullConnNet_{}.pth".format(epoch // 200))
+        if (i+1) % 200 == 0:
+            torch.save(net, "./train_model/FullConnNet_{}.pth".format((i+1) // 200))
 
 
 if __name__ == '__main__':
