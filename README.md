@@ -2,7 +2,7 @@
 
 ## 机械臂小组项目
 
-- 环境：python3.6+pytorch，或许还需要一些辅助工具包如numpy，pandas，tqdm等等
+- 环境：python3.6+pytorch，或许还需要一些辅助工具包如numpy，pandas，matplotlib，tqdm等等
 #### 各文件作用:
 
 - FullConnNet.py:定义全连接神经网络模型的代码
