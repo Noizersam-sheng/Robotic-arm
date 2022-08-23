@@ -9,6 +9,7 @@
 - train.py:训练该模型的代码
 - test.py:测试该模型的代码
 - train_model:存放训练好的模型
+- demo.py:完整的神经网络demo，拟合sinx函数，使用的是gpu训练，若是cpu需要修改部分代码
 
 #### 需要完成的工作:
 
