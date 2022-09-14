@@ -21,15 +21,15 @@ def test(epoch):
     theta = np.loadtxt(theta_addr, dtype=np.float).reshape(epoch, 6)
     matrix = np.loadtxt(matrix_addr, dtype=np.float).reshape(epoch, 4, 4)
     # 加载训练模型
-    net = torch.load('./train_model/FullConnNet_25.pth')
+    net = torch.load('./train_model/FullConnNet_5.pth')
     net.eval()
     total_loss = 0
     total_accuracy = 0
     with torch.no_grad():
         for i in tqdm(range(epoch)):
             # 此处填写测试代码
-            input_matrix = torch.tensor(matrix[i].reshape(1, 16), dtype=torch.float)
-            label = torch.tensor(theta[i], dtype=torch.float)
+            input_matrix = torch.tensor(matrix[i].reshape(1, 16), dtype=torch.float).to('cuda')
+            label = torch.tensor(theta[i], dtype=torch.float).to('cuda')
             output_theta = net(input_matrix)
             loss = loss_func(label, output_theta)
             total_loss += loss

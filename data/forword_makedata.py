@@ -1,6 +1,8 @@
 import math
-import random
+
 import numpy as np
+import pandas as pd
+from tqdm import tqdm
 
 
 def sin(a):
@@ -23,48 +25,39 @@ def matrix_generator(theta, d, a, alpha):
 
 
 # 求运动学正解
-def forward(theta, num):
-    matrix = np.zeros(shape=(num, 4, 4))
+def forward(theta):
+    identity_matrix = np.identity(4)  # 构造单位矩阵
     a = [0, -0.42500, -0.39225, 0, 0, 0]
     d = [0.089159, 0, 0, 0.10915, 0.09465, 0.08230]
     alpha = [math.pi / 2, 0, 0, math.pi / 2, -math.pi / 2, 0]
-    for i in range(theta.shape[0]):
+    for i in range(6):  # 位姿矩阵相乘
+        transfer_matrix = matrix_generator(theta[i], d[i], a[i], alpha[i])
+        identity_matrix = identity_matrix.dot(transfer_matrix)
+    return identity_matrix
+
+
+# 生成测试和训练数据
+def test_generator(num):
+    theta_addr = './test/theta.csv'  # 生成不同的数据记得改文件名
+    matrix_addr = './test/matrix.csv'
+    np.set_printoptions(precision=6)  # 控制小数点为6位
+    theta = np.random.random((num, 6))
+    final_position_matrix = np.empty(shape=(0, 16))
+    for i in tqdm(range(num)):
         item = theta[i]
-        t_01 = matrix_generator(item[0], d[0], a[0], alpha[0])
-        t_12 = matrix_generator(item[1], d[1], a[1], alpha[1])
-        t_23 = matrix_generator(item[2], d[2], a[2], alpha[2])
-        t_34 = matrix_generator(item[3], d[3], a[3], alpha[3])
-        t_45 = matrix_generator(item[4], d[4], a[4], alpha[4])
-        t_56 = matrix_generator(item[5], d[5], a[5], alpha[5])
-        matrix[i] = t_01.dot(t_12.dot(t_23).dot(t_34).dot(t_45).dot(t_56))
-    return matrix
+        # print(item)
+        final_position = forward(item)
+        # print(final_position)
+        final_position = final_position.reshape(1, 16)  # 将二维矩阵拉成一维
+        # print(final_position)
+        final_position_matrix = np.append(final_position_matrix, final_position, axis=0)  # 将所有的一维矩阵拼接成一个二维矩阵
+    # print(final_position_matrix)
 
-
-# 生成训练数据
-def train_generator(train_addr, num):
-    theta_addr = train_addr + 'theta.txt'
-    matrix_addr = train_addr + 'matrix.txt'
-    theta = np.random.random((num, 6))
-    matrix = forward(theta, num)
-    np.savetxt(theta_addr, theta, fmt='%6f')
-    with open(matrix_addr, 'w') as file:
-        for item in matrix:
-            np.savetxt(file, item, fmt='%6f')
-
-
-# 生成测试数据
-def test_generator(test_addr, num):
-    theta_addr = test_addr + 'theta.txt'
-    matrix_addr = test_addr + 'matrix.txt'
-    theta = np.random.random((num, 6))
-    matrix = forward(theta, num)
-    np.savetxt(theta_addr, theta, fmt='%6f')
-    with open(matrix_addr, 'w') as file:        for item in matrix:
-            np.savetxt(file, item, fmt='%6f')
+    theta = pd.DataFrame(theta)
+    theta.to_csv(path_or_buf=theta_addr, float_format='%6f', index=False)
+    final_position_matrix = pd.DataFrame(final_position_matrix)
+    final_position_matrix.to_csv(path_or_buf=matrix_addr, float_format='%6f', index=False)
 
 
 if __name__ == '__main__':
-    train_addr = './train/'
-    test_addr = './test/'
-    train_generator(train_addr, 10000)
-    test_generator(test_addr, 2000)
+    test_generator(2000)
