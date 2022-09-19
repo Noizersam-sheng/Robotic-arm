@@ -1,5 +1,4 @@
 import math
-
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -31,15 +30,15 @@ def forward(theta):
     d = [0.089159, 0, 0, 0.10915, 0.09465, 0.08230]
     alpha = [math.pi / 2, 0, 0, math.pi / 2, -math.pi / 2, 0]
     for i in range(6):  # 位姿矩阵相乘
-        transfer_matrix = matrix_generator(theta[i], d[i], a[i], alpha[i])
+        transfer_matrix = matrix_generator(theta[i][0], d[i], a[i], alpha[i])
         identity_matrix = identity_matrix.dot(transfer_matrix)
     return identity_matrix
 
 
-# 生成测试和训练数据
 def test_generator(num):
-    theta_addr = './test/theta.csv'  # 生成不同的数据记得改文件名
-    matrix_addr = './test/matrix.csv'
+# 生成测试和训练数据
+    theta_addr = '../data/test/theta.csv'  # 生成不同的数据记得改文件名
+    matrix_addr = '../data/train/matrix.csv'
     np.set_printoptions(precision=6)  # 控制小数点为6位
     theta = np.random.random((num, 6))
     final_position_matrix = np.empty(shape=(0, 16))
